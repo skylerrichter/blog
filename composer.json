@@ -1,0 +1,15 @@
+{
+    "name": "skylerrichter/blog",
+    "authors": [
+        {
+            "name": "Skyler Richter",
+            "email": "skylerrichter@gmail.com"
+        }
+    ],
+    "require": {
+        "consolidation/robo": "^1.1",
+        "leafo/scssphp": "^0.6.7",
+        "michelf/php-markdown": "^1.7",
+        "mustache/mustache": "^2.12"
+    }
+}
