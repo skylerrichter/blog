@@ -10,28 +10,18 @@ use Symfony\Component\Yaml\Yaml;
 class RoboFile extends Tasks
 {
 	/**
-	 * @var string
+	 * @var array
 	 */
-	protected $buildPath = 'docs';
-
-	/**
-	 * @var string
-	 */
-	protected $contentPath = 'posts';
-
-	/**
-	 * @var string
-	 */
-	protected $layoutPath = 'templates/layout.mustache';
+	protected $contexts = [];
 
 	/**
 	 * Return a new MustacheEngine instance.
 	 * 
 	 * @return MustacheEngine
 	 */
-	protected function getLayout()
+	protected function getRenderer($template)
 	{
-        return (new MustacheEngine())->loadTemplate($this->loadLayout());
+        return (new MustacheEngine())->loadTemplate($this->getTemplate($template));
 	}
 
 	/**
@@ -39,9 +29,9 @@ class RoboFile extends Tasks
 	 * 
 	 * @return string
 	 */
-	public function loadLayout()
+	public function getTemplate($template)
 	{
-	   return file_get_contents($this->layoutPath);
+		return file_get_contents(sprintf('templates/%s.mustache', $template));
 	}
 
 	/**
@@ -53,8 +43,7 @@ class RoboFile extends Tasks
 	protected function makePath($directory)
 	{
         return sprintf(
-            '%s/%s/index.html', 
-            $this->buildPath, 
+            'build/%s/index.html', 
             $directory->getPathname()
         );
 	}
@@ -90,6 +79,7 @@ class RoboFile extends Tasks
     {
     	$this->compileAssets();
     	$this->processContent();
+    	$this->buildIndex();
     }
 
     /**
@@ -100,7 +90,7 @@ class RoboFile extends Tasks
     public function compileAssets()
     {
     	$this
-			->taskScss(['scss/index.scss' => sprintf('%s/css/index.css', $this->buildPath)])
+			->taskScss(['scss/index.scss' => sprintf('build/css/index.css')])
             ->importDir('scss/imports')
             ->run();
     }
@@ -112,7 +102,7 @@ class RoboFile extends Tasks
      */
     protected function getDirectories()
     {
-    	return Finder::create()->directories()->in($this->contentPath);
+    	return Finder::create()->directories()->in('posts');
     }
 
     /**
@@ -139,8 +129,21 @@ class RoboFile extends Tasks
     	foreach ($this->getDirectories() as $directory) {
     		$this
     	 		->taskWriteToFile($this->makePath($directory))
-     	 		->line($this->getLayout()->render($this->getContext($directory)))
+     	 		->line($this->getRenderer('post')->render($this->getContext($directory)))
 		     	->run();
     	}	
+    }
+
+    /**
+     * Build index.
+     * 
+     * @return void
+     */
+    public function buildIndex()
+    {
+    	$this
+	 		->taskWriteToFile('build/index.html')
+ 	 		->line($this->getRenderer('index')->render())
+	     	->run();
     }
 } 
