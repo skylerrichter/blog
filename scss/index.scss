@@ -1,7 +1,71 @@
-$red: red;
+@import url('https://cdnjs.cloudflare.com/ajax/libs/basscss/8.0.3/css/basscss.css');
 
-.hello {
-  .world {
-    color: $red;
-  }
+@import url('https://fonts.googleapis.com/css?family=Lora');
+@import url('https://fonts.googleapis.com/css?family=Archivo+Black');
+@import url('https://fonts.googleapis.com/css?family=Montserrat');
+
+$montserrat: Montserrat, sans-serif;
+
+$primary: #3d1f5c;
+$grey: #f7f7f7;
+
+html,
+body {
+	padding: 0;
+	margin: 0;
+	font-family: 'Lora', sans-serif;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	color: #525252;
+	// background-color: #002a35;
+	// color: #839496;
+}
+
+body {
+	font-size: 17px;
+	line-height: 2;
+}
+
+header {
+	background-color: $primary;
+	margin-bottom: 4.3rem;
+}
+
+footer {
+	font-size: 0.8em;
+	font-weight: 500;
+	font-family: $montserrat;
+	background-color: #202020;
+	color: #999999;
+}
+
+h1 {
+	color: white;
+	font-family: 'Archivo Black', sans-serif;
+	font-weight: 400;
+	margin: 0;
+}
+
+.metadata {
+	color: #ddd;
+	font-weight: bolder;
+	font-family: $montserrat;
+	text-transform: uppercase;
+	font-size: 0.8em;
+}
+
+.tags {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	li {
+		color: #999999;
+		text-transform: uppercase;
+		font-family: $montserrat;
+		border: solid 2px #999999;
+		font-size: 0.8em;
+		font-weight: bold;
+		border-radius: 50px;
+		padding: 0 0.5rem;
+	}
 }

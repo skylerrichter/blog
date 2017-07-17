@@ -2,16 +2,17 @@
 
 use Robo\Tasks;
 
+use Michelf\Markdown;
 use Mustache_Engine as MustacheEngine;
 use Symfony\Component\Finder\Finder;
-use Michelf\Markdown;
+use Symfony\Component\Yaml\Yaml;
 
 class RoboFile extends Tasks
 {
 	/**
 	 * @var string
 	 */
-	protected $buildPath = 'build';
+	protected $buildPath = 'docs';
 
 	/**
 	 * @var string
@@ -30,61 +31,65 @@ class RoboFile extends Tasks
 	 */
 	protected function getLayout()
 	{
-		return (new MustacheEngine())->loadTemplate($this->loadLayout());
+        return (new MustacheEngine())->loadTemplate($this->loadLayout());
 	}
 
 	/**
-	 * Load the layout.
+	 * Load layout.
 	 * 
 	 * @return string
 	 */
 	public function loadLayout()
 	{
-		return file_get_contents($this->layoutPath);
+	   return file_get_contents($this->layoutPath);
 	}
 
 	/**
-	 * Make content path.
+	 * Make path.
 	 * 
+	 * @param $file
 	 * @return string
 	 */
-	protected function makePath($file)
+	protected function makePath($directory)
 	{
-		return sprintf(
-			'%s/%s/%s.html', 
-			$this->buildPath, 
-			$this->contentPath, 
-			$file->getFilename()
-		);
+        return sprintf(
+            '%s/%s/index.html', 
+            $this->buildPath, 
+            $directory->getPathname()
+        );
 	}
 
 	/**
-	 * Run getContents threw Markdown.
+	 * Get content.
 	 * 
+	 * @param $file
 	 * @return string
 	 */
-	public function markdownFileContents($file)
+	public function getContent($file)
 	{
-		return Markdown::defaultTransform($file->getContents());
+		return Markdown::defaultTransform(file_get_contents($file));
+	}
+
+	/**
+	 * Get metadata.
+	 * 
+	 * @param $file string
+	 * @return \Symfony\Component\Yaml
+	 */
+	public function getMetadata($file)
+	{
+		return Yaml::parse(file_get_contents($file));
 	}
 
     /**
-	 * Compile website.
+	 * Build.
 	 * 
 	 * @return void
      */
     public function build()
     {
     	$this->compileAssets();
-
-    	$files = Finder::create()->files()->name('*.md')->in($this->contentPath);
-
-    	foreach ($files as $file) {
-    		$this
-    			->taskWriteToFile($this->makePath($file))
-     			->line($this->getLayout()->render(['content' => $this->markdownFileContents($file)]))
-		    	->run();
-    	}
+    	$this->processContent();
     }
 
     /**
@@ -98,5 +103,44 @@ class RoboFile extends Tasks
 			->taskScss(['scss/index.scss' => sprintf('%s/css/index.css', $this->buildPath)])
             ->importDir('scss/imports')
             ->run();
+    }
+
+    /**
+     * Get directories.
+     * 
+     * @return array
+     */
+    protected function getDirectories()
+    {
+    	return Finder::create()->directories()->in($this->contentPath);
+    }
+
+    /**
+     * Get context.
+     * 
+     * @param $directory
+     * @return array
+     */
+    public function getContext($directory)
+    {
+    	return [
+    		'content' => $this->getContent(sprintf('%s/index.md', $directory->getPathname())),
+    		'metadata' => $this->getMetadata(sprintf('%s/metadata.yml', $directory->getPathname()))
+    	];
+    }
+
+    /**
+     * Process content.
+     * 
+     * @return void
+     */
+    public function processContent()
+    {
+    	foreach ($this->getDirectories() as $directory) {
+    		$this
+    	 		->taskWriteToFile($this->makePath($directory))
+     	 		->line($this->getLayout()->render($this->getContext($directory)))
+		     	->run();
+    	}	
     }
 } 

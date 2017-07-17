@@ -1,12 +1,40 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Title of the document</title>
+	<meta charset="UTF-8">
+	<title>Title of the document</title>
+	<link href="../../css/index.css" rel="stylesheet" type="text/css">
 </head>
 
 <body>
-{{{ content }}}
+<header>
+	<div class="px3">
+		<div class="max-width-3 mx-auto">
+			<div class="py4">
+			    <h1 class="center mb2">{{metadata.title}}</h1>
+		    	<div class="center mb3 metadata">{{metadata.date}} &middot; {{metadata.author}} &middot; in {{metadata.category}} &middot; 2 Comments</div>
+		    	<ul class="center tags">
+		    		{{#metadata.tags}}
+	    				<li class="inline-block">{{.}}</li>
+		    		{{/metadata.tags}}
+	    		</ul>
+			</div>
+		</div>
+	</div>
+</header>
+<div class="px3">
+	<article class="max-width-3 mx-auto pb4">
+    	{{{content}}}
+	</article>
+</div>
+<footer>
+	<div class="px3">
+		<div class="max-width-3 mx-auto">
+			<div class="py4">
+				<p class="center">Minimal blog theme designed for bloggers and focused on readability of the content so your visitors can enjoy on site as much as when reading your stories</p>
+			</div>
+		</div>
+	</div>
+</footer>
 </body>
-
 </html>
