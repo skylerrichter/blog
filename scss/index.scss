@@ -46,6 +46,13 @@ h1 {
 	margin: 0;
 }
 
+.posts {
+	.post {
+		border-bottom: dotted 1px black;
+		padding: 1rem 0;
+	}
+}
+
 .metadata {
 	color: #ddd;
 	font-weight: bolder;

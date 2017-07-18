@@ -79,7 +79,7 @@ class RoboFile extends Tasks
     {
     	$this->compileAssets();
     	$this->processContent();
-    	$this->buildIndex();
+    	// $this->buildIndex();
     }
 
     /**
@@ -100,7 +100,7 @@ class RoboFile extends Tasks
      * 
      * @return array
      */
-    protected function getDirectories()
+    protected function getPosts()
     {
     	return Finder::create()->directories()->in('posts');
     }
@@ -126,24 +126,22 @@ class RoboFile extends Tasks
      */
     public function processContent()
     {
-    	foreach ($this->getDirectories() as $directory) {
+    	foreach ($this->getPosts() as $post) {
     		$this
-    	 		->taskWriteToFile($this->makePath($directory))
-     	 		->line($this->getRenderer('post')->render($this->getContext($directory)))
+    	 		->taskWriteToFile($this->makePath($post))
+     	 		->line($this->getRenderer('post')->render($this->getContext($post)))
 		     	->run();
-    	}	
-    }
+    	}
 
-    /**
-     * Build index.
-     * 
-     * @return void
-     */
-    public function buildIndex()
-    {
-    	$this
-	 		->taskWriteToFile('build/index.html')
- 	 		->line($this->getRenderer('index')->render())
-	     	->run();
+        $posts = [];
+
+        foreach ($this->getPosts() as $post) {
+            array_push($posts, $this->getContext($post));
+        }
+
+        $this
+            ->taskWriteToFile('build/index.html')
+            ->line($this->getRenderer('index')->render(['posts' => $posts]))
+            ->run();
     }
 } 
