@@ -13,6 +13,7 @@
         "mustache/mustache": "^2.12",
         "hyn/frontmatter": "^1.1",
         "cebe/markdown": "^1.1",
-        "symfony/yaml": "^3.3"
+        "symfony/yaml": "^3.3",
+        "henrikbjorn/lurker": "^1.2"
     }
 }

@@ -10,12 +10,7 @@ use Symfony\Component\Yaml\Yaml;
 class RoboFile extends Tasks
 {
 	/**
-	 * @var array
-	 */
-	protected $contexts = [];
-
-	/**
-	 * Return a new MustacheEngine instance.
+	 * Get renderer.
 	 * 
 	 * @return MustacheEngine
 	 */
@@ -25,13 +20,13 @@ class RoboFile extends Tasks
 	}
 
 	/**
-	 * Load layout.
+	 * Get template.
 	 * 
 	 * @return string
 	 */
 	public function getTemplate($template)
 	{
-		return file_get_contents(sprintf('templates/%s.mustache', $template));
+		return file_get_contents(sprintf('src/templates/%s.mustache', $template));
 	}
 
 	/**
@@ -40,12 +35,9 @@ class RoboFile extends Tasks
 	 * @param $file
 	 * @return string
 	 */
-	protected function makePath($directory)
+	protected function makePath($path)
 	{
-        return sprintf(
-            'build/%s/index.html', 
-            $directory->getPathname()
-        );
+        return sprintf('docs/%s/index.html', str_replace('src/', '', $path));
 	}
 
 	/**
@@ -78,8 +70,24 @@ class RoboFile extends Tasks
     public function build()
     {
     	$this->compileAssets();
-    	$this->processContent();
-    	// $this->buildIndex();
+    	$this->buildContent(
+            $this->getContext()
+        );
+    }
+
+    /**
+     * Watch.
+     * 
+     * @return void
+     */
+    public function watch()
+    {
+        $this
+            ->taskWatch()
+            ->monitor('src', function() {
+                $this->build();
+            })
+            ->run();
     }
 
     /**
@@ -90,8 +98,8 @@ class RoboFile extends Tasks
     public function compileAssets()
     {
     	$this
-			->taskScss(['scss/index.scss' => sprintf('build/css/index.css')])
-            ->importDir('scss/imports')
+			->taskScss(['src/scss/index.scss' => 'docs/css/index.css'])
+            ->importDir('src/scss/imports')
             ->run();
     }
 
@@ -102,16 +110,16 @@ class RoboFile extends Tasks
      */
     protected function getPosts()
     {
-    	return Finder::create()->directories()->in('posts');
+    	return iterator_to_array(Finder::create()->directories()->in('src/posts'));
     }
 
     /**
-     * Get context.
+     * Get post.
      * 
      * @param $directory
      * @return array
      */
-    public function getContext($directory)
+    public function getPost($directory)
     {
     	return [
     		'content' => $this->getContent(sprintf('%s/index.md', $directory->getPathname())),
@@ -120,28 +128,51 @@ class RoboFile extends Tasks
     }
 
     /**
-     * Process content.
+     * Get context.
+     * 
+     * @return array
+     */
+    public function getContext()
+    {
+        return array_map([$this, 'getPost'], $this->getPosts());
+    }
+
+    /**
+     * Build content.
      * 
      * @return void
      */
-    public function processContent()
+    public function buildContent($context)
     {
-    	foreach ($this->getPosts() as $post) {
+        $this->buildPages($context);
+        $this->buildIndex($context);
+    }
+
+    /**
+     * Build pages.
+     * 
+     * @return void
+     */
+    public function buildPages($context)
+    {
+    	foreach ($context as $path => $post) {
     		$this
-    	 		->taskWriteToFile($this->makePath($post))
-     	 		->line($this->getRenderer('post')->render($this->getContext($post)))
+    	 		->taskWriteToFile($this->makePath($path))
+     	 		->line($this->getRenderer('post')->render($post))
 		     	->run();
     	}
+    }
 
-        $posts = [];
-
-        foreach ($this->getPosts() as $post) {
-            array_push($posts, $this->getContext($post));
-        }
-
+    /**
+     * Build index.
+     * 
+     * @return void
+     */
+    public function buildIndex($context)
+    {
         $this
-            ->taskWriteToFile('build/index.html')
-            ->line($this->getRenderer('index')->render(['posts' => $posts]))
+            ->taskWriteToFile('docs/index.html')
+            ->line($this->getRenderer('index')->render(['context' => array_values($context)]))
             ->run();
     }
 } 
