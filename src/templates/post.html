@@ -10,12 +10,12 @@
 	<div class="px3">
 		<div class="max-width-3 mx-auto">
 			<div class="py4">
-			    <h1 class="center mb2">{{metadata.title}}</h1>
-		    	<div class="center mb3 metadata">{{metadata.date}} &middot; {{metadata.author}} &middot; in {{metadata.category}} &middot; 2 Comments</div>
+			    <h1 class="center mb2">{{post.metadata.title}}</h1>
+		    	<div class="center mb3 metadata">{{post.metadata.date}} &middot; {{post.metadata.author}} &middot; in {{metadata.category}} &middot; 2 Comments</div>
 		    	<ul class="center tags">
-		    		{{#metadata.tags}}
-	    				<li class="inline-block">{{.}}</li>
-		    		{{/metadata.tags}}
+		    		{% for tag in post.metadata.tags %}
+	    				<li class="inline-block">{{ tag }}</li>
+		    		{% endfor %}
 	    		</ul>
 			</div>
 		</div>
@@ -23,7 +23,7 @@
 </header>
 <div class="px3">
 	<article class="max-width-3 mx-auto pb4">
-    	{{{content}}}
+    	{{ post.content|raw }}
 	</article>
 </div>
 <footer>

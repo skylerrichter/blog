@@ -10,10 +10,8 @@
         "consolidation/robo": "^1.1",
         "leafo/scssphp": "^0.6.7",
         "michelf/php-markdown": "^1.7",
-        "mustache/mustache": "^2.12",
-        "hyn/frontmatter": "^1.1",
-        "cebe/markdown": "^1.1",
         "symfony/yaml": "^3.3",
-        "henrikbjorn/lurker": "^1.2"
+        "henrikbjorn/lurker": "^1.2",
+        "twig/twig": "^2.4"
     }
 }

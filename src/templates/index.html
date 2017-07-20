@@ -9,11 +9,13 @@
 	<div class="px3">
 		<div class="max-width-3 mx-auto">
 			<div class="posts">
-				{{#context}}
+				{% for path, post in posts %}
 					<div class="post">
-						<strong>{{metadata.title}}</strong> / {{metadata.date}}
+						<a href="{{ path }}/index.html">
+							<strong>{{ post.metadata.title }}</strong> / {{ post.metadata.date }}
+						</a>
 					</div>
-				{{/context}}
+				{% endfor %}
 			<div>
 		</div>
 	</div>

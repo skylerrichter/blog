@@ -3,7 +3,8 @@
 use Robo\Tasks;
 
 use Michelf\Markdown;
-use Mustache_Engine as MustacheEngine;
+use Twig_Environment as TwigEnvironment;
+use Twig_Loader_Filesystem as TwigLoaderFilesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Yaml\Yaml;
 
@@ -14,20 +15,11 @@ class RoboFile extends Tasks
 	 * 
 	 * @return MustacheEngine
 	 */
-	protected function getRenderer($template)
+	protected function getRenderer()
 	{
-        return (new MustacheEngine())->loadTemplate($this->getTemplate($template));
-	}
-
-	/**
-	 * Get template.
-	 * 
-	 * @return string
-	 */
-	public function getTemplate($template)
-	{
-		return file_get_contents(sprintf('src/templates/%s.mustache', $template));
-	}
+        // return (new MustacheEngine())->loadTemplate($this->getTemplate($template));
+        return new TwigEnvironment(new TwigLoaderFilesystem(__DIR__ . '/src/templates'));
+    }
 
 	/**
 	 * Make path.
@@ -158,7 +150,7 @@ class RoboFile extends Tasks
     	foreach ($context as $path => $post) {
     		$this
     	 		->taskWriteToFile($this->makePath($path))
-     	 		->line($this->getRenderer('post')->render($post))
+     	 		->line($this->getRenderer()->load('post.html')->render(['post' => $post]))
 		     	->run();
     	}
     }
@@ -172,7 +164,7 @@ class RoboFile extends Tasks
     {
         $this
             ->taskWriteToFile('docs/index.html')
-            ->line($this->getRenderer('index')->render(['context' => array_values($context)]))
+            ->line($this->getRenderer()->load('index.html')->render(['posts' => $context]))
             ->run();
     }
 } 
