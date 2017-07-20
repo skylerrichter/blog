@@ -1,29 +1,29 @@
 <?php
 
-use Robo\Tasks;
-
 use Michelf\Markdown;
+use Robo\Tasks;
+use Symfony\Component\Yaml\Yaml;
+use Symfony\Component\Finder\Finder;
 use Twig_Environment as TwigEnvironment;
 use Twig_Loader_Filesystem as TwigLoaderFilesystem;
-use Symfony\Component\Finder\Finder;
-use Symfony\Component\Yaml\Yaml;
 
 class RoboFile extends Tasks
 {
 	/**
-	 * Get renderer.
-	 * 
-	 * @return MustacheEngine
+	 * Create a new Twig instance.
+	 * TODO: Make this a factory method so we only create one Twig instance per build.
+     * 
+	 * @return TwigEnvironment
 	 */
 	protected function getRenderer()
 	{
-        // return (new MustacheEngine())->loadTemplate($this->getTemplate($template));
         return new TwigEnvironment(new TwigLoaderFilesystem(__DIR__ . '/src/templates'));
     }
 
 	/**
-	 * Make path.
-	 * 
+	 * Returns the write path for a post.
+     * TODO: Find a better way to deal with the src/ fragment.
+     * 
 	 * @param $file
 	 * @return string
 	 */
@@ -33,7 +33,7 @@ class RoboFile extends Tasks
 	}
 
 	/**
-	 * Get content.
+	 * Get the content for a post and transform it with Markdown.
 	 * 
 	 * @param $file
 	 * @return string
@@ -44,10 +44,10 @@ class RoboFile extends Tasks
 	}
 
 	/**
-	 * Get metadata.
+	 * Get the metadata for a post and YAML parse it.
 	 * 
 	 * @param $file string
-	 * @return \Symfony\Component\Yaml
+	 * @return array
 	 */
 	public function getMetadata($file)
 	{
@@ -83,6 +83,17 @@ class RoboFile extends Tasks
     }
 
     /**
+     * Serve.
+     * TODO: Start a static development server.
+     * 
+     * @return void
+     */
+    public function serve()
+    {
+        //
+    }
+
+    /**
 	 * Compile assets.
 	 * 
 	 * @return void
@@ -96,7 +107,7 @@ class RoboFile extends Tasks
     }
 
     /**
-     * Get directories.
+     * Find all the raw posts.
      * 
      * @return array
      */
@@ -106,7 +117,7 @@ class RoboFile extends Tasks
     }
 
     /**
-     * Get post.
+     * Fetch the content and metadata for a post.
      * 
      * @param $directory
      * @return array
@@ -157,6 +168,7 @@ class RoboFile extends Tasks
 
     /**
      * Build index.
+     * TODO: Prevent the src/ fragment from showing up in templates.
      * 
      * @return void
      */
