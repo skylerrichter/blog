@@ -182,6 +182,7 @@ class RoboFile extends Tasks
 
     /**
      * Watch.
+     * BUG: Watch does not register template changes.
      * 
      * @return void
      */
