@@ -12,12 +12,13 @@ class RoboFile extends Tasks
 	/**
 	 * Create a new Twig instance.
 	 * TODO: Make this a factory method so we only create one Twig instance per build.
+     * BUG: Watch does not register template changes.
      * 
 	 * @return TwigEnvironment
 	 */
 	protected function getRenderer()
 	{
-        return new TwigEnvironment(new TwigLoaderFilesystem(__DIR__ . '/src/templates'));
+        return new TwigEnvironment(new TwigLoaderFilesystem('src/templates'));
     }
 
 	/**
@@ -184,7 +185,6 @@ class RoboFile extends Tasks
 
     /**
      * Watch.
-     * BUG: Watch does not register template changes.
      * 
      * @return void
      */
