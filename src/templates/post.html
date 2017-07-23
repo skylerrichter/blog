@@ -1,39 +1,9 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<meta charset="UTF-8">
-	<title></title>
-	<link href="../../css/index.css" rel="stylesheet" type="text/css">
-</head>
-<body>
-<header>
-	<div class="px3">
-		<div class="max-width-3 mx-auto">
-			<div class="py4">
-			    <h1 class="center mb2">{{post.metadata.title}}</h1>
-		    	<div class="center mb3 metadata">{{post.metadata.date}} &middot; {{post.metadata.author}} &middot; in {{metadata.category}} &middot; 2 Comments</div>
-		    	<ul class="center tags">
-		    		{% for tag in post.metadata.tags %}
-	    				<li class="inline-block">{{ tag }}</li>
-		    		{% endfor %}
-	    		</ul>
-			</div>
-		</div>
-	</div>
-</header>
-<div class="px3">
-	<article class="max-width-3 mx-auto pb4">
-    	{{ post.content|raw }}
+{% extends "layout.html" %}
+
+{% block content %}
+	<article class="post">
+		<time>{{ post.metadata.date }}</time>
+		<h2>{{ post.metadata.title }}</h2>
+		{{ post.content|raw }}
 	</article>
-</div>
-<footer>
-	<div class="px3">
-		<div class="max-width-3 mx-auto">
-			<div class="py4">
-				<p class="center">Minimal blog theme designed for bloggers and focused on readability of the content so your visitors can enjoy on site as much as when reading your stories</p>
-			</div>
-		</div>
-	</div>
-</footer>
-</body>
-</html>
+{% endblock %}

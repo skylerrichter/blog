@@ -32,88 +32,70 @@ class RoboFile extends Tasks
         return sprintf('docs/%s/index.html', str_replace('src/', '', $path));
 	}
 
-	/**
-	 * Get the content for a post and transform it with Markdown.
-	 * 
-	 * @param $file
-	 * @return string
-	 */
-	public function getContent($file)
-	{
-		return Markdown::defaultTransform(file_get_contents($file));
-	}
-
-	/**
-	 * Get the metadata for a post and YAML parse it.
-	 * 
-	 * @param $file string
-	 * @return array
-	 */
-	public function getMetadata($file)
-	{
-		return Yaml::parse(file_get_contents($file));
-	}
-
     /**
-	 * Build.
-	 * 
-	 * @return void
-     */
-    public function build()
-    {
-    	$this->compileAssets();
-    	$this->buildContent(
-            $this->getContext()
-        );
-    }
-
-    /**
-     * Watch.
+     * Build index.
+     * TODO: Prevent the src/ fragment from showing up in templates.
      * 
      * @return void
      */
-    public function watch()
+    public function buildIndex($posts)
     {
         $this
-            ->taskWatch()
-            ->monitor('src', function() {
-                $this->build();
-            })
+            ->taskWriteToFile('docs/index.html')
+            ->line($this->getRenderer()->load('index.html')->render([
+                'posts' => $posts
+            ]))
             ->run();
     }
 
     /**
-     * Serve.
-     * TODO: Start a static development server.
+     * Build pages.
      * 
      * @return void
      */
-    public function serve()
+    public function buildPages($posts)
     {
-        //
+        foreach ($posts as $path => $post) {
+            $this
+                ->taskWriteToFile($this->makePath($path))
+                ->line($this->getRenderer()->load('post.html')->render([
+                    'post' => $post
+                ]))
+                ->run();
+        }
     }
 
     /**
-	 * Compile assets.
-	 * 
-	 * @return void
-     */
-    public function compileAssets()
-    {
-    	$this
-			->taskScss(['src/scss/index.scss' => 'docs/css/index.css'])
-            ->importDir('src/scss/imports')
-            ->run();
-    }
-
-    /**
-     * Find all the raw posts.
+     * Build content.
      * 
+     * @return void
+     */
+    public function buildContent($posts)
+    {
+        $this->buildPages($posts);
+        $this->buildIndex($posts);
+    }
+
+    /**
+     * Get the content for a post and transform it with Markdown.
+     * 
+     * @param $file
+     * @return string
+     */
+    public function getContent($file)
+    {
+        return Markdown::defaultTransform(file_get_contents($file));
+    }
+
+    /**
+     * Get the metadata for a post and YAML parse it.
+     * 
+     * @param $file string
      * @return array
      */
-    protected function getPosts()
+    public function getMetadata($file)
     {
-    	return iterator_to_array(Finder::create()->directories()->in('src/posts'));
+        return Yaml::parse(file_get_contents($file));
     }
 
     /**
@@ -124,10 +106,20 @@ class RoboFile extends Tasks
      */
     public function getPost($directory)
     {
-    	return [
-    		'content' => $this->getContent(sprintf('%s/index.md', $directory->getPathname())),
-    		'metadata' => $this->getMetadata(sprintf('%s/metadata.yml', $directory->getPathname()))
-    	];
+        return [
+            'content' => $this->getContent(sprintf('%s/index.md', $directory->getPathname())),
+            'metadata' => $this->getMetadata(sprintf('%s/metadata.yml', $directory->getPathname()))
+        ];
+    }
+
+    /**
+     * Find all the raw posts.
+     * 
+     * @return array
+     */
+    protected function findRaw()
+    {
+        return iterator_to_array(Finder::create()->directories()->in('src/posts'));
     }
 
     /**
@@ -135,48 +127,64 @@ class RoboFile extends Tasks
      * 
      * @return array
      */
-    public function getContext()
+    public function getPosts()
     {
-        return array_map([$this, 'getPost'], $this->getPosts());
+        return array_map([$this, 'getPost'], $this->findRaw());
     }
 
     /**
-     * Build content.
+     * Compile assets.
      * 
      * @return void
      */
-    public function buildContent($context)
-    {
-        $this->buildPages($context);
-        $this->buildIndex($context);
-    }
-
-    /**
-     * Build pages.
-     * 
-     * @return void
-     */
-    public function buildPages($context)
-    {
-    	foreach ($context as $path => $post) {
-    		$this
-    	 		->taskWriteToFile($this->makePath($path))
-     	 		->line($this->getRenderer()->load('post.html')->render(['post' => $post]))
-		     	->run();
-    	}
-    }
-
-    /**
-     * Build index.
-     * TODO: Prevent the src/ fragment from showing up in templates.
-     * 
-     * @return void
-     */
-    public function buildIndex($context)
+    public function compileAssets()
     {
         $this
-            ->taskWriteToFile('docs/index.html')
-            ->line($this->getRenderer()->load('index.html')->render(['posts' => $context]))
+            ->taskScss(['src/scss/index.scss' => 'docs/css/index.css'])
+            ->importDir('src/scss/imports')
+            ->run();
+    }
+
+    /**
+     * Build.
+     * 
+     * @return void
+     */
+    public function build()
+    {
+        $this->compileAssets();
+        $this->buildContent(
+            $this->getPosts()
+        );
+    }
+
+    /**
+     * Watch.
+     * 
+     * @return void
+     */
+    public function watch()
+    {
+        $this->build();
+
+        $this
+            ->taskWatch()
+            ->monitor('src', function() {
+                $this->build();
+            })
+            ->run();
+    }
+
+    /**
+     * Serve.
+     * 
+     * @return void
+     */
+    public function serve()
+    {
+        $this
+            ->taskServer(8000)
+            ->dir('docs')
             ->run();
     }
 } 

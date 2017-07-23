@@ -5,35 +5,59 @@
 html, body {
   padding: 0;
   margin: 0;
-  font-family: 'Lora', sans-serif;
+  font-family: Montserrat, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: #525252; }
+  color: #343a40; }
 
 body {
   font-size: 17px;
   line-height: 2; }
 
-header {
-  background-color: #3d1f5c;
-  margin-bottom: 4.3rem; }
-
 footer {
-  font-size: 0.8em;
-  font-weight: 500;
-  font-family: Montserrat, sans-serif;
-  background-color: #202020;
-  color: #999; }
+  font-size: 1em;
+  font-weight: 500; }
 
-h1, h2 {
-  color: white;
-  font-family: 'Archivo Black', sans-serif;
-  font-weight: 400;
-  margin: 0; }
+a {
+  text-decoration: none;
+  color: #343a40; }
 
-.posts .post {
-  border-bottom: dotted 1px black;
-  padding: 1rem 0; }
+h1, h2, h3 {
+  color: #343a40;
+  font-weight: 600;
+  margin: 0;
+  padding: 0; }
+
+h1 {
+  font-size: 2.4em; }
+  h1.small {
+    font-size: 0.8em;
+    text-transform: uppercase; }
+
+h2 {
+  padding: 0 0 2rem 0; }
+
+h3 {
+  padding: 2rem 0; }
+
+p {
+  margin: 0;
+  padding: 0 0 2rem 0; }
+
+pre {
+  background-color: #f5f5f5;
+  padding: 1.6rem;
+  margin: 0 0 2rem 0; }
+
+.post {
+  margin-bottom: 4rem; }
+  .post time {
+    display: block;
+    color: #868e96;
+    font-size: 0.8em;
+    margin: 0 0 0.2rem 0;
+    text-transform: uppercase;
+    color: gray; }
 
 .metadata {
   color: #ddd;
