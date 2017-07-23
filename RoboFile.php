@@ -29,7 +29,7 @@ class RoboFile extends Tasks
 	 */
 	protected function makePath($path)
 	{
-        return sprintf('docs/%s/index.html', str_replace('src/', '', $path));
+        return sprintf('dist/%s/index.html', str_replace('src/', '', $path));
 	}
 
     /**
@@ -41,7 +41,7 @@ class RoboFile extends Tasks
     public function buildIndex($posts)
     {
         $this
-            ->taskWriteToFile('docs/index.html')
+            ->taskWriteToFile('dist/index.html')
             ->line($this->getRenderer()->load('index.html')->render([
                 'posts' => $posts
             ]))
@@ -140,7 +140,7 @@ class RoboFile extends Tasks
     public function compileAssets()
     {
         $this
-            ->taskScss(['src/scss/index.scss' => 'docs/css/index.css'])
+            ->taskScss(['src/scss/index.scss' => 'dist/css/index.css'])
             ->importDir('src/scss/imports')
             ->run();
     }
@@ -152,6 +152,7 @@ class RoboFile extends Tasks
      */
     public function build()
     {
+        $this->clean();
         $this->compileAssets();
         $this->buildContent(
             $this->getPosts()
@@ -164,20 +165,21 @@ class RoboFile extends Tasks
      * 
      * @return void
      */
-    public function make()
+    public function make($title)
     {
-
+        $path = strtolower(str_replace(' ', '-', $title));
+        $this->_mkdir(sprintf('src/posts/%s', $path));
     }
 
     /**
      * Clean.
-     * TODO: Empty the build folder.
      * 
      * @return void
      */
     public function clean()
     {
-
+        $this->_deleteDir(['dist']);
+        $this->_mkdir(['dist', 'dist/css']);
     }
 
     /**
@@ -189,7 +191,6 @@ class RoboFile extends Tasks
     public function watch()
     {
         $this->build();
-
         $this
             ->taskWatch()
             ->monitor('src', function() {
@@ -207,7 +208,7 @@ class RoboFile extends Tasks
     {
         $this
             ->taskServer(8000)
-            ->dir('docs')
+            ->dir('dist')
             ->run();
     }
 } 
