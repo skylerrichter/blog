@@ -1,0 +1,9 @@
+{% extends "layout.html" %}
+
+{% block content %}
+	<article class="post">
+		<time>{{ post.metadata.date }}</time>
+		<h2>{{ post.metadata.title }}</h2>
+		{{ post.content|raw }}
+	</article>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+
+{% block content %}
+	<div class="posts">
+		{% for path, post in posts %}
+			<div class="post">
+				<a href="{{ path|replace({'src/': ''}) }}">
+					<time>{{ post.metadata.date }}</time>
+					<h2>{{ post.metadata.title }}</h2>
+					<p>{{ post.metadata.strapline }}</p>
+				</a>
+			</div>
+		{% endfor %}
+	</div>
+{% endblock %}
