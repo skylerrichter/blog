@@ -159,6 +159,28 @@ class RoboFile extends Tasks
     }
 
     /**
+     * Make.
+     * TODO: Scaffold post.
+     * 
+     * @return void
+     */
+    public function make()
+    {
+
+    }
+
+    /**
+     * Clean.
+     * TODO: Empty the build folder.
+     * 
+     * @return void
+     */
+    public function clean()
+    {
+
+    }
+
+    /**
      * Watch.
      * 
      * @return void
